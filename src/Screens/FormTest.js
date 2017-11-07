@@ -12,22 +12,32 @@ import {
   DatePickerAndroid,
   TouchableHighlight
 } from 'react-native';
+import moment from 'moment-timezone';
 
 class FormTest extends Component {
   constructor(props) {
     super(props);
     this.state = {
       title: "Form",
-      age: '',
+      age: "",
+      gender: "",
       fever: false,
-      medico: false,
+      bitterTaste:false,
+      abPain: false,
+      headache: false,
+      jointPain: false,
+      diarrhea: false,
+      vomit: false,
+      musclePain: false,
+      itchiness: false,
+      anorexia: false,
+      eyePain: false,
+      skinWound: false,
+      weakness: false,
       nausea: false,
-      tontura: false,
-      mancha: false,
-      dignostico: false,
-      doenca: '',
-      end: '',
-      begin: '',
+      startDate: null,
+      latitude: null,
+      longitude: null,
     }
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -37,54 +47,72 @@ class FormTest extends Component {
   };
   async handleBeginDate() {
     try {
+      var date = new Date();
       const {action, year, month, day} = await DatePickerAndroid.open({
-        date: new Date()
+        date: date,
+        maxDate: date,
+        mode: 'default'
       });
       if (action !== DatePickerAndroid.dismissedAction) {
+        let sendDate = moment().date(day).month(month).year(year).format('YYYY-MM-DD');
         this.setState({
-          begin: day+'/'+month+'/'+year
+          startDate: sendDate
         })
       }
     } catch ({code, message}) {
       console.warn('Cannot open date picker', message);
     }
   }
-  async handleEndDate() {
-    try {
-      const {action, year, month, day} = await DatePickerAndroid.open({
-        minDate: new Date(this.state.begin),
-        date: new Date()
-      });
 
-      if (action !== DatePickerAndroid.dismissedAction) {
-        this.setState({
-          end: day+'/'+month+'/'+year
-        })
-      }
-    } catch ({code, message}) {
-      console.warn('Cannot open date picker', message);
-    }
-  }
   onSubmit(){
     const { navigate } = this.props.navigation;
-    var body = {
-      idade: this.state.age,
-      febre: this.state.fever,
-      medico: this.state.medico,
-      nausea: this.state.nausea,
-      tontura: this.state.tontura,
-      mancha: this.state.mancha,
-      dignostico: this.state.dignostico,
-      doenca: this.state.doenca,
-      start: this.state.end,
-      finish: this.state.begin,
-    }
-    if (this.state.begin === '' || this.state.end === '' || this.state.age === '') {
-      console.log('error');
-    }else {
-      console.log('ok');
-      navigate('Resultado');
-    }
+    var latitude;
+    var longitude
+    navigator.geolocation.getCurrentPosition((position) => {
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+      var payload = {
+        age: this.state.age,
+        gender: this.state.gender,
+        fever: this.state.fever,
+        bitterTaste: this.state.bitterTaste,
+        abPain: this.state.abPain,
+        headache: this.state.headache,
+        jointPain: this.state.jointPain,
+        diarrhea: this.state.diarrhea,
+        vomit: this.state.vomit,
+        musclePain: this.state.musclePain,
+        itchiness: this.state.itchiness,
+        anorexia: this.state.anorexia,
+        eyePain: this.state.eyePain,
+        skinWound: this.state.skinWound,
+        weakness: this.state.weakness,
+        nausea: this.state.nausea,
+        startDate: this.state.begin,
+        latitude: latitude,
+        longitude: longitude,
+      }
+      if (this.state.begin === '' ||  this.state.age === '') {
+        console.log('error');
+      }else {
+        var header = new Headers({
+          'Content-Type': 'application/json'
+        });
+        var config = {
+          method: 'POST',
+          headers: header,
+          body: JSON.stringify(payload)
+        };
+        fetch('http://ec2-18-231-5-64.sa-east-1.compute.amazonaws.com:3000/reports', config)
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJson) => {
+          navigate('Resultado',{reportId: responseJson.reportId});
+      })
+        .catch((err) => console.log(err));
+      }
+    });
   }
   render() {
     let hasDiagnostic = this.state.medico
@@ -107,8 +135,21 @@ class FormTest extends Component {
           </View>
 
           <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>Sexo:</Text>
+            <Picker
+              style={styles.defaultPicker}
+              selectedValue={this.state.gender}
+              onValueChange={(itemValue, itemPosition)=> this.setState({gender: itemValue})}
+            >
+              <Picker.Item label="Selecione" enable={false}/>
+              <Picker.Item label="Masculino" value={"M"} />
+              <Picker.Item label="Feminino" value={"F"} />
+            </Picker>
+          </View>
+
+          <View style={styles.Grid_inline}>
             <Text style={styles.fontS}>Data de inicio </Text>
-            <Text style={styles.fontS} >{this.state.begin}</Text>
+            <Text style={styles.fontS} >{this.state.startDate}</Text>
             <Button
               style={styles.defaultButton}
               title="calendario"
@@ -117,16 +158,6 @@ class FormTest extends Component {
             />
           </View>
 
-          <View style={styles.Grid_inline}>
-            <Text style={styles.fontS}>Data de termino </Text>
-            <Text style={styles.fontS}>{this.state.end}</Text>
-            <Button
-              style={styles.defaultButton}
-              title="calendario"
-              onPress={() => this.handleEndDate()}
-              color= 'rgb(27, 134, 112)'
-            />
-          </View>
           <View style={styles.Grid_inline}>
             <Text style={styles.fontS}>Sente febre? </Text>
             <Switch
@@ -154,56 +185,159 @@ class FormTest extends Component {
           </View>
 
           <View style={styles.Grid_inline}>
-            <Text style={styles.fontS}>Sente tontura? </Text>
+            <Text style={styles.fontS}>Sente gosto amargo? </Text>
             <Switch
               onTintColor="rgb(38, 136, 92)"
-              value={this.state.tontura}
+              value={this.state.bitterTaste}
               onValueChange={(v) => {
                 this.setState({
-                  tontura: v
+                  bitterTaste: v
                 });
               }}
             />
           </View>
 
           <View style={styles.Grid_inline}>
-            <Text style={styles.fontS}>Possui manchas na pele? </Text>
+            <Text style={styles.fontS}>ferida na pele? </Text>
             <Switch
               onTintColor="rgb(38, 136, 92)"
-              value={this.state.manchas}
+              value={this.state.skinWound}
               onValueChange={(v) => {
                 this.setState({
-                  manchas: v
+                  skinWound: v
                 });
               }}
             />
           </View>
 
           <View style={styles.Grid_inline}>
-            <Text style={styles.fontS}>Ja foi diagnosticado por um medico? </Text>
+            <Text style={styles.fontS}>dor abdominal? </Text>
             <Switch
               onTintColor="rgb(38, 136, 92)"
-              value={this.state.medico}
+              value={this.state.abPain}
               onValueChange={(v) => {
                 this.setState({
-                  medico: v
+                  abPain: v
+                });
+              }}
+            />
+          </View>
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>dor de cabeça? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.headache}
+              onValueChange={(v) => {
+                this.setState({
+                  headache: v
                 });
               }}
             />
           </View>
 
-          {hasDiagnostic ? (
-            <TextInput
-              placeholder="Qual sua doença?"
-              value={this.state.doenca}
-              onChange={(v) => {
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>dor nas articulações? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.jointPain}
+              onValueChange={(v) => {
                 this.setState({
-                  doenca: v
+                  jointPain: v
                 });
-              }}/>
-          ) :
-            null
-          }
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>diarréia ? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.diarrhea}
+              onValueChange={(v) => {
+                this.setState({
+                  diarrhea: v
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}> vomito ? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.vomit}
+              onValueChange={(v) => {
+                this.setState({
+                  vomit: v
+                });
+              }}
+            />
+          </View>
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>dor muscular? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.musclePain}
+              onValueChange={(v) => {
+                this.setState({
+                  musclePain: v
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>coceira ? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.itchiness}
+              onValueChange={(v) => {
+                this.setState({
+                  itchiness: v
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>Perda de peso significante? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.anorexia}
+              onValueChange={(v) => {
+                this.setState({
+                  anorexia: v
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>dor nos olhos? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.eyePain}
+              onValueChange={(v) => {
+                this.setState({
+                  eyePain: v
+                });
+              }}
+            />
+          </View>
+
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>fraqueza? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.weakness}
+              onValueChange={(v) => {
+                this.setState({
+                  weakness: v
+                });
+              }}
+            />
+          </View>
+
           <View style={styles.Grid_submit}>
             <TouchableHighlight
               style={styles.defaultButton}
@@ -266,6 +400,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'rgb(27, 134, 112)',
     height: 50
+  },
+  defaultPicker: {
+    width: 200,
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderWidth: 5,
+    borderColor: 'rgb(27, 134, 112)',
+    borderStyle: 'solid'
   }
 });
 export default FormTest;

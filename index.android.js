@@ -11,6 +11,7 @@ import {StackNavigator, TabNavigator} from 'react-navigation';
 import FormTest from './src/Screens/FormTest';
 import MapTab from './src/Screens/MapTab';
 import Resultado from './src/Screens/Result';
+import Home from './src/Screens/Home';
 
 tabs = TabNavigator({
   Test: {
@@ -39,8 +40,12 @@ tabs = TabNavigator({
 
 export default tcc = StackNavigator({
   Home: {
-    screen: tabs,
+    screen: Home,
     title: 'Home'
+  },
+  Teste: {
+    screen: tabs,
+    title: 'teste'
   },
   Resultado: {
     screen: Resultado,

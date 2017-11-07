@@ -15,8 +15,8 @@ class MapTab extends Component {
       region: {
         latitude: 37.78825,
         longitude: -122.4324,
-        latitudeDelta: 0.04,
-        longitudeDelta: 0.04
+        latitudeDelta: 0.08,
+        longitudeDelta: 0.08
       }
     }
     this.onRegionChange = this.onRegionChange.bind(this);
@@ -32,12 +32,11 @@ class MapTab extends Component {
           error: null,
         }
       });
-      console.log(this.state);
     });
 
   }
   static navigationOptions = {
-    title: 'Teste tab ',
+    title: 'Casos na regiãos',
   }
   onRegionChange(region) {
     this.setState({ region });

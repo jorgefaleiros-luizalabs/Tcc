@@ -8,6 +8,7 @@
     "flow": "flow"
   },
   "dependencies": {
+    "moment-timezone": "^0.5.13",
     "react": "16.0.0-alpha.12",
     "react-native": "0.48.3",
     "react-native-maps": "^0.16.4",
