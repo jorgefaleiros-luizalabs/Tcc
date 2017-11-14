@@ -24,7 +24,7 @@ class Resultado extends Component {
       method: 'GET',
       headers: header
     };
-    fetch('http://ec2-18-231-5-64.sa-east-1.compute.amazonaws.com:3000/result/'+ this.props.navigation.state.params.reportId, config)
+    fetch('http://10.0.6.162:3000/result/'+ this.props.navigation.state.params.reportId, config)
     .then((response) => {
       return response.json();
     })

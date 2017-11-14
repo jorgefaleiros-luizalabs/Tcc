@@ -33,6 +33,7 @@ class MapTab extends Component {
       },
       markers: [],
     };
+    this.plotMarkers = this.plotMarkers.bind(this);
   }
   componentWillMount() {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -59,20 +60,42 @@ class MapTab extends Component {
       ],
     });
   }
-  componentDidMount() {
-    this.setState({
-      markers: [
-        ...this.state.markers,
-        {
-          coordinate: {
-            latitude: -20.540158,
-            longitude: -47.405136,
-          },
-          key: id++,
-          color: randomColor(),
-        },
-      ],
+  plotMarkers(){
+    var header = new Headers({
+      'Content-Type': 'application/json'
     });
+    var config = {
+      method: 'GET',
+      header: header
+    }
+    fetch('http://10.0.6.162:3000/reports/position', config)
+    .then((response) => {
+      return response.json();
+    })
+    .then((result) => {
+      console.log(result);
+      result.forEach((row) => {
+        this.setState({
+          markers: [
+            ...this.state.markers,
+            {
+              coordinate: {
+                latitude: row.latitude,
+                longitude: row.longitude,
+              },
+              key: id++,
+              color: randomColor(),
+            },
+          ],
+        });
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  }
+  componentDidMount() {
+    this.plotMarkers()
   }
   static navigationOptions = {
     title: 'Casos na regiãos',

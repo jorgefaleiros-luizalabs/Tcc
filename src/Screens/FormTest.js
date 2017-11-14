@@ -103,7 +103,7 @@ class FormTest extends Component {
           headers: header,
           body: JSON.stringify(payload)
         };
-        fetch('http://ec2-18-231-5-64.sa-east-1.compute.amazonaws.com:3000/reports', config)
+        fetch('http://10.0.6.162:3000/reports', config)
         .then((response) => {
           return response.json();
         })
