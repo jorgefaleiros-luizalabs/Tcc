@@ -1,70 +1,65 @@
-import React , { Component } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet
-} from 'react-native'
+import React, {Component} from 'react'
+import {View, Text, StyleSheet} from 'react-native'
 
 class Resultado extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    }
+    this.state = {}
   }
   static navigationOptions = {
     tile: 'Resultado',
-
+    headerStyle: {
+        backgroundColor: 'rgba(183, 237, 154, 0.8)'
+    }
   }
 
-  componentWillMount(){
-    var header = new Headers({
-      'Content-Type': 'application/json'
-    });
+  componentWillMount() {
+    var header = new Headers({'Content-Type': 'application/json'});
     var config = {
       method: 'GET',
       headers: header
     };
-    fetch('http://10.0.6.162:3000/result/'+ this.props.navigation.state.params.reportId, config)
-    .then((response) => {
+    fetch('http://192.168.50.39:3000/result/' + this.props.navigation.state.params.reportId, config).then((response) => {
       return response.json();
-    })
-    .then((responseJson) => {
+    }).then((responseJson) => {
       var perc = responseJson.result;
       perc = perc.toPrecision(3);
       console.log(perc);
       perc = perc * 100;
       perc = perc.toPrecision(3);
-      this.setState({
-          result: perc
-      })
-  })
-    .catch((err) => console.log(err));
+      this.setState({result: perc})
+    }).catch((err) => console.log(err));
   }
 
   render() {
-    return(
-      <View style={styles.Grid_title}>
-        <Text style={styles.fontM}>
-          Seu resultado é:
-          <Text style={styles.fontG}>
-            {this.state.result}
-          </Text>
-        </Text>
-      </View>
-    );
+    return (<View style={styles.Grid_title}>
+      <Text style={styles.result_text}>
+        Seu resultado é:
+      </Text>
+      <Text style={styles.result}>
+        {this.state.result}%
+      </Text>
+    </View>);
   }
 }
 const styles = StyleSheet.create({
   Grid_title: {
     flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: '#FFF'
   },
-  fontM: {
-    fontSize: 20
+  result_text: {
+    flex: 1,
+    fontSize: 30,
+    marginBottom: 20,
+    color: '#000'
   },
-  fontG: {
-    fontSize: 28
+  result: {
+    flex: 1,
+    fontSize: 50,
+    color:'#40a867',
+    fontWeight: 'bold'
   }
 })
 export default Resultado;

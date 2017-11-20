@@ -24,16 +24,17 @@ tabs = TabNavigator({
   }
 }, {
   tabBarOptions: {
-    activeTintColor: '#FFF',
+    activeTintColor: '#000',
     labelStyle: {
       fontSize: 15,
+      color: '#000'
     },
     indicatorStyle: {
-      backgroundColor: '#07715b',
+      backgroundColor: 'rgba(131, 168, 111, 0.8)',
       height: 5
     },
     style: {
-      backgroundColor: '#0c9c7d',
+      backgroundColor: 'rgba(183, 237, 154, 0.8)'
     },
   }
 })

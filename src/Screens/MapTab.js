@@ -68,7 +68,7 @@ class MapTab extends Component {
       method: 'GET',
       header: header
     }
-    fetch('http://10.0.6.162:3000/reports/position', config)
+    fetch('http://192.168.50.39:3000/reports/position', config)
     .then((response) => {
       return response.json();
     })
@@ -99,6 +99,9 @@ class MapTab extends Component {
   }
   static navigationOptions = {
     title: 'Casos na regiãos',
+    headerStyle: {
+        backgroundColor: 'rgba(183, 237, 154, 0.8)'
+    }
   }
   onRegionChange(region) {
     this.setState({ region });
@@ -120,14 +123,7 @@ class MapTab extends Component {
             />
           ))}
         </MapView>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => this.setState({ markers: [] })}
-            style={styles.bubble}
-          >
-            <Text>Tap to create a marker of random color</Text>
-          </TouchableOpacity>
-        </View>
+        
       </View>
     );
   }

@@ -38,12 +38,16 @@ class FormTest extends Component {
       startDate: null,
       latitude: null,
       longitude: null,
+      bleeding: null
     }
     this.onSubmit = this.onSubmit.bind(this);
   }
   static navigationOptions = {
     title: 'Dengue Tester',
-    tabBarLabel: 'Teste'
+    tabBarLabel: 'Teste',
+    headerStyle: {
+        backgroundColor: 'rgba(183, 237, 154, 0.8)'
+    }
   };
   async handleBeginDate() {
     try {
@@ -89,6 +93,7 @@ class FormTest extends Component {
         weakness: this.state.weakness,
         nausea: this.state.nausea,
         startDate: this.state.begin,
+        bleeding: this.state.bleeding,
         latitude: latitude,
         longitude: longitude,
       }
@@ -103,7 +108,7 @@ class FormTest extends Component {
           headers: header,
           body: JSON.stringify(payload)
         };
-        fetch('http://10.0.6.162:3000/reports', config)
+        fetch('http://192.168.50.39:3000/reports', config)
         .then((response) => {
           return response.json();
         })
@@ -119,7 +124,7 @@ class FormTest extends Component {
     return (
       <ScrollView style= {styles.Grid_1}>
         <View style= {styles.Grid_title}>
-          <Text style={styles.fontG}>Formulario de doenças</Text>
+          <Text style={styles.fontG}>Teste para dengue</Text>
         </View>
         <View style= {styles.Grid_5}>
           <View style={styles.Grid_inline}>
@@ -140,6 +145,7 @@ class FormTest extends Component {
               style={styles.defaultPicker}
               selectedValue={this.state.gender}
               onValueChange={(itemValue, itemPosition)=> this.setState({gender: itemValue})}
+              mode = 'dialog'
             >
               <Picker.Item label="Selecione" enable={false}/>
               <Picker.Item label="Masculino" value={"M"} />
@@ -338,12 +344,25 @@ class FormTest extends Component {
             />
           </View>
 
+          <View style={styles.Grid_inline}>
+            <Text style={styles.fontS}>Sangramento? </Text>
+            <Switch
+              onTintColor="rgb(38, 136, 92)"
+              value={this.state.bleeding}
+              onValueChange={(v) => {
+                this.setState({
+                  bleeding: v
+                });
+              }}
+            />
+          </View>
+
           <View style={styles.Grid_submit}>
             <TouchableHighlight
               style={styles.defaultButton}
               onPress={() => {this.onSubmit()}}
             >
-              <Text style={{textAlign: 'center', fontSize: 28, color: '#FFF'}}>Enviar</Text>
+              <Text style={{textAlign: 'center', fontSize: 28, color: '#000'}}>Enviar</Text>
             </TouchableHighlight>
           </View>
         </View>
@@ -356,9 +375,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+
   },
   fontG: {
-      fontSize: 28
+      fontSize: 28,
+      marginBottom: 20
   },
   fontM: {
     fontSize: 20
@@ -372,6 +393,7 @@ const styles = StyleSheet.create({
   },
   Grid_1: {
     flex: 1,
+    backgroundColor: '#FFF'
   },
   Grid_5: {
     flex: 5,
@@ -398,15 +420,15 @@ const styles = StyleSheet.create({
   defaultButton: {
     width: 300,
     alignSelf: 'center',
-    backgroundColor: 'rgb(27, 134, 112)',
-    height: 50
+    backgroundColor: 'rgba(127, 179, 129, 1)',
+    height: 50,
+    elevation: 2,
+    margin: 20
   },
   defaultPicker: {
     width: 200,
-    backgroundColor: 'rgb(255, 255, 255)',
-    borderWidth: 5,
-    borderColor: 'rgb(27, 134, 112)',
-    borderStyle: 'solid'
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    elevation: 2
   }
 });
 export default FormTest;
